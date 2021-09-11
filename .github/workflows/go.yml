@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [ '**' ]
+    paths-ignore:
+      - 'README.md'
+      - 'example/README.md'
+      - 'docs/**'
+      - '.github/dependabot.yml'
+  pull_request:
+    branches: [ main ]
+env:
+  BINARY: 'server'
+
+jobs:
+ # Lint check, using https://github.com/mgechev/revive
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Run Revive Action - simple
+        uses: docker://morphy/revive-action:v2
+        with:
+          config: ./simple/revive.toml
+          name: "Linter"
+  pre_flight:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+      changelog : ${{ steps.tag_version.outputs.changelog }}
+    steps:
+    - name: Establish tags and versions
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v5.6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+  simple:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: simple
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: "^1.17"
+
+    - name: Setting Up protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.14.0'
+
+    - name: GO MOD VENDOR
+      run: go mod vendor
+
+    - name: Install protoc Plugins
+      run:  |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
+        go get -u github.com/fluffy-bunny/grpcdotnetgo/protoc-gen-go-di/cmd/protoc-gen-go-di
+    
+    - name: make proto go
+      run: |
+        protoc --proto_path=. --proto_path=vendor --proto_path=vendor/github.com/fluffy-bunny  --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --go-di_out=. --go-di_opt=paths=source_relative ./internal/grpcContracts/helloworld/helloworld.proto
+ 
+    - name: Build Server
+      run: |
+        go build -mod=mod -v -a -tags netgo -ldflags "-X 'main.version=${{ steps.tag_version.outputs.new_tag }}' -extldflags '-static'" ./cmd/server 
+    
+    - name: Build Client
+      run: |
+        go build -mod=mod -v -a -tags netgo -ldflags "-X 'main.version=${{ steps.tag_version.outputs.new_tag }}' -extldflags '-static'" ./cmd/client         
+
+    - name: Test
+      run: |
+        go test -mod=mod -v ./... 
+ 
+  pre-release:
+    needs: [simple]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: "^1.17"
+    
+    - name: GO MOD VENDOR
+      run: go mod vendor
+     # NOTE: This will NOT trigger another run of the workflow
+    - name: AutoCommit
+      uses: stefanzweifel/git-auto-commit-action@v4.11.0
+      with:
+        commit_message: Apply Protoc Changes
+        
+  release:
+    needs: [pre_flight,pre-release]
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: |
+        echo new_tag: ${{needs.pre_flight.outputs.new_tag}} 
+        echo changelog: ${{needs.pre_flight.outputs.changelog}}
+    
+    - name: Create a GitHub release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          tag_name: ${{needs.pre_flight.outputs.new_tag}}
+          release_name: Release ${{needs.pre_flight.outputs.new_tag}} 
+          body:  ${{needs.pre_flight.outputs.changelog}}
+    
