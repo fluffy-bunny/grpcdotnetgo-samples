@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/fluffy-bunny/grpcdotnetgo v0.1.97
 	github.com/fluffy-bunny/protoc-gen-go-di v0.0.33
-	github.com/fluffy-bunny/sarulabsdi v0.1.14
+	github.com/fluffy-bunny/sarulabsdi v0.1.23
 	github.com/fluffy-bunny/viperEx v0.0.23
 	github.com/gogo/googleapis v1.4.1
 	github.com/gogo/protobuf v1.3.2
@@ -22,6 +22,7 @@ require (
 	github.com/bamzi/jobrunner v1.0.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fluffy-bunny/mockoidc v0.0.0-20210902160455-4c83c82b8422 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
