@@ -2,9 +2,9 @@ package plugin
 
 import (
 	"github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/startup"
-	grpcdotnetgo_core_types "github.com/fluffy-bunny/grpcdotnetgo/pkg/core/types"
+	coreContracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
+	pluginContracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/plugin"
 	grpcdotnetgo_plugin "github.com/fluffy-bunny/grpcdotnetgo/pkg/plugin"
-	grpcdotnetgo_plugin_types "github.com/fluffy-bunny/grpcdotnetgo/pkg/plugin/types"
 )
 
 func init() {
@@ -15,7 +15,7 @@ type pluginService struct {
 }
 
 // NewPlugin ...
-func NewPlugin() grpcdotnetgo_plugin_types.IGRPCDotNetGoPlugin {
+func NewPlugin() pluginContracts.IGRPCDotNetGoPlugin {
 	return &pluginService{}
 }
 
@@ -25,6 +25,6 @@ func (p *pluginService) GetName() string {
 }
 
 // GetStartup gets startup object
-func (p *pluginService) GetStartup() grpcdotnetgo_core_types.IStartup {
+func (p *pluginService) GetStartup() coreContracts.IStartup {
 	return startup.NewStartup()
 }

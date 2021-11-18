@@ -3,7 +3,7 @@ package welcome
 import (
 	"reflect"
 
-	servicesBackgroundtasks "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/backgroundtasks"
+	contractsBackgroundtasks "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/backgroundtasks"
 	servicesLogger "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/logger"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/rs/zerolog/log"
@@ -14,7 +14,7 @@ func AddOneTimeWelcomeJobProvider(builder *di.Builder) {
 	log.Info().
 		Msg("IoC: AddOneTimeWelcomeJobProvider")
 	types := di.NewTypeSet()
-	types.Add(servicesBackgroundtasks.TypeIJobsProvider)
+	types.Add(contractsBackgroundtasks.ReflectTypeIJobsProvider)
 
 	builder.Add(di.Def{
 		Scope:            di.App,

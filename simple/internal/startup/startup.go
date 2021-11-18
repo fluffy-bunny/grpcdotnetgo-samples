@@ -5,15 +5,16 @@ import (
 	"os"
 	"path/filepath"
 
+	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/contracts/simple/helloworld"
 	"github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal"
-	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/grpcContracts/helloworld"
 	backgroundCounterService "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/background/cron/counter"
 	backgroundWelcomeService "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/background/onetime/welcome"
 	handlerGreeterService "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/helloworld/handler"
 	singletonService "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/singleton"
 	transientService "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/transient"
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/auth/oauth2"
-	grpcdotnetgo_core_types "github.com/fluffy-bunny/grpcdotnetgo/pkg/core/types"
+	claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
+	coreContracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
 	middleware_dicontext "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/dicontext/middleware"
 	middleware_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/logger"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
@@ -42,19 +43,35 @@ func getConfigPath() string {
 // Startup ...
 type Startup struct {
 	MockOIDCService interface{}
-	ConfigOptions   *grpcdotnetgo_core_types.ConfigOptions
+	ConfigOptions   *coreContracts.ConfigOptions
 	RootContainer   di.Container
 }
 
 // NewStartup ...
-func NewStartup() grpcdotnetgo_core_types.IStartup {
+func NewStartup() coreContracts.IStartup {
 	startup := &Startup{}
 	startup.ctor()
 	return startup
 }
 
+// GetStartupManifest wrapper
+func (s *Startup) GetStartupManifest() coreContracts.StartupManifest {
+	return coreContracts.StartupManifest{
+		Name:    "hello",
+		Version: "test.1",
+	}
+}
+
+// OnPreServerStartup wrapper
+func (s *Startup) OnPreServerStartup() error {
+	return nil
+}
+
+// OnPostServerShutdown Wrapper
+func (s *Startup) OnPostServerShutdown() {}
+
 func (s *Startup) ctor() {
-	s.ConfigOptions = &grpcdotnetgo_core_types.ConfigOptions{
+	s.ConfigOptions = &coreContracts.ConfigOptions{
 		Destination: &internal.Config{},
 		RootConfig:  internal.ConfigDefaultYaml,
 		ConfigPath:  getConfigPath(),
@@ -62,7 +79,7 @@ func (s *Startup) ctor() {
 }
 
 // GetConfigOptions ...
-func (s *Startup) GetConfigOptions() *grpcdotnetgo_core_types.ConfigOptions {
+func (s *Startup) GetConfigOptions() *coreContracts.ConfigOptions {
 	return s.ConfigOptions
 }
 
@@ -112,7 +129,7 @@ func (s *Startup) ConfigureServices(builder *di.Builder) {
 }
 
 // Configure ...
-func (s *Startup) Configure(unaryServerInterceptorBuilder grpcdotnetgo_core_types.IUnaryServerInterceptorBuilder) {
+func (s *Startup) Configure(unaryServerInterceptorBuilder coreContracts.IUnaryServerInterceptorBuilder) {
 	// this is how  you get your config before you register your services
 	config := s.ConfigOptions.Destination.(*internal.Config)
 
@@ -120,19 +137,19 @@ func (s *Startup) Configure(unaryServerInterceptorBuilder grpcdotnetgo_core_type
 		"bearer", 5)
 	for _, v := range config.Example.OIDCConfig.EntryPoints {
 		methodClaims := oauth2.MethodClaims{
-			OR:  []oauth2.Claim{},
-			AND: []oauth2.Claim{},
+			OR:  []claimsprincipal.Claim{},
+			AND: []claimsprincipal.Claim{},
 		}
 
 		for _, vv := range v.ClaimsConfig.AND {
-			methodClaims.AND = append(methodClaims.AND, oauth2.Claim{
+			methodClaims.AND = append(methodClaims.AND, claimsprincipal.Claim{
 				Type:  vv.Type,
 				Value: vv.Value,
 			})
 		}
 
 		for _, vv := range v.ClaimsConfig.OR {
-			methodClaims.OR = append(methodClaims.OR, oauth2.Claim{
+			methodClaims.OR = append(methodClaims.OR, claimsprincipal.Claim{
 				Type:  vv.Type,
 				Value: vv.Value,
 			})
@@ -152,7 +169,7 @@ func (s *Startup) Configure(unaryServerInterceptorBuilder grpcdotnetgo_core_type
 	unaryServerInterceptorBuilder.Use(grpc_ctxtags.UnaryServerInterceptor())
 	unaryServerInterceptorBuilder.Use(middleware_logger.EnsureContextLoggingUnaryServerInterceptor())
 	unaryServerInterceptorBuilder.Use(middleware_logger.EnsureCorrelationIDUnaryServerInterceptor())
-	unaryServerInterceptorBuilder.Use(middleware_dicontext.UnaryServerInterceptor())
+	unaryServerInterceptorBuilder.Use(middleware_dicontext.UnaryServerInterceptor(s.RootContainer))
 	unaryServerInterceptorBuilder.Use(middleware_logger.LoggingUnaryServerInterceptor())
 
 	//	authHandler := middleware_grpc_auth.GetAuthFuncAccessorFromContainer(serviceProvider.GetContainer())

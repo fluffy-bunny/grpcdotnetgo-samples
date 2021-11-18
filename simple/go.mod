@@ -3,9 +3,9 @@ module github.com/fluffy-bunny/grpcdotnetgo-samples/simple
 go 1.17
 
 require (
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.97
-	github.com/fluffy-bunny/protoc-gen-go-di v0.0.33
-	github.com/fluffy-bunny/sarulabsdi v0.1.23
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.141
+	github.com/fluffy-bunny/grpcdotnetgo-samples/contracts v0.0.0-20211118161804-83a5db4de856
+	github.com/fluffy-bunny/sarulabsdi v0.1.33
 	github.com/fluffy-bunny/viperEx v0.0.23
 	github.com/gogo/googleapis v1.4.1
 	github.com/gogo/protobuf v1.3.2
@@ -14,8 +14,7 @@ require (
 	github.com/jnewmano/grpc-json-proxy v0.0.3
 	github.com/rs/zerolog v1.25.0
 	github.com/spf13/viper v1.8.1
-	google.golang.org/grpc v1.40.0
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/grpc v1.41.0
 )
 
 require (
@@ -29,7 +28,6 @@ require (
 	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
@@ -57,6 +55,7 @@ require (
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
+	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

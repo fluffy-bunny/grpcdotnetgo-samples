@@ -3,12 +3,12 @@ package handler
 import (
 	"fmt"
 
+	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/contracts/simple/helloworld"
 	"github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal"
-	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/grpcContracts/helloworld"
+	claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
+	contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/contextaccessor"
+	servicesLogger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	grpcError "github.com/fluffy-bunny/grpcdotnetgo/pkg/grpc/error"
-	claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
-	contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/contextaccessor"
-	servicesLogger "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/logger"
 	"google.golang.org/grpc/codes"
 )
 

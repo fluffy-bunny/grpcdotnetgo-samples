@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
+	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/contracts/simple/helloworld"
 	"github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal"
-	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/grpcContracts/helloworld"
 	_ "github.com/fluffy-bunny/grpcdotnetgo/pkg/proto/error"
 	"github.com/gogo/googleapis/google/rpc"
 	"github.com/gogo/status"

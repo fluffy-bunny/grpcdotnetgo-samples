@@ -3,11 +3,11 @@ package handler
 import (
 	"reflect"
 
-	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/grpcContracts/helloworld"
+	pb "github.com/fluffy-bunny/grpcdotnetgo-samples/contracts/simple/helloworld"
 	servicesConfig "github.com/fluffy-bunny/grpcdotnetgo-samples/simple/internal/services/config"
-	"github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
-	contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/contextaccessor"
-	servicesLogger "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/logger"
+	"github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
+	contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/contextaccessor"
+	servicesLogger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/rs/zerolog/log"
 )
@@ -26,9 +26,9 @@ func AddGreeterService(builder *di.Builder) {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return &Service{
 				config:          servicesConfig.GetConfigFromContainer(ctn),
-				ContextAccessor: contextaccessor.GetContextAccessorFromContainer(ctn),
-				ClaimsPrincipal: claimsprincipal.GetClaimsPrincipalFromContainer(ctn),
-				Logger:          servicesLogger.GetScopedLoggerFromContainer(ctn),
+				ContextAccessor: contextaccessor.GetIContextAccessorFromContainer(ctn),
+				ClaimsPrincipal: claimsprincipal.GetIClaimsPrincipalFromContainer(ctn),
+				Logger:          servicesLogger.GetILoggerFromContainer(ctn),
 			}, nil
 		},
 	})
@@ -48,9 +48,9 @@ func AddGreeter2Service(builder *di.Builder) {
 		Build: func(ctn di.Container) (interface{}, error) {
 			return &Service2{
 				config:          servicesConfig.GetConfigFromContainer(ctn),
-				ContextAccessor: contextaccessor.GetContextAccessorFromContainer(ctn),
-				ClaimsPrincipal: claimsprincipal.GetClaimsPrincipalFromContainer(ctn),
-				Logger:          servicesLogger.GetScopedLoggerFromContainer(ctn),
+				ContextAccessor: contextaccessor.GetIContextAccessorFromContainer(ctn),
+				ClaimsPrincipal: claimsprincipal.GetIClaimsPrincipalFromContainer(ctn),
+				Logger:          servicesLogger.GetILoggerFromContainer(ctn),
 			}, nil
 		},
 	})

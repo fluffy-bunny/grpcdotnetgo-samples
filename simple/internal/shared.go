@@ -2,8 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-
-	_ "github.com/fluffy-bunny/grpcdotnetgo/pkg" // ensure that go mod vendor brings everything
 )
 
 func PrettyJSON(obj interface{}) string {
